@@ -1,44 +1,47 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+
+from app import models, schemas
+from app.db import engine, get_db
 from app.crypto import decrypt_payload, blind_index
-import os
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-DB = []
-
-class Payload(BaseModel):
-    encrypted_data: str
-    encrypted_key: str
-    iv: str
-    tag: str
-    key_version: str
 
 @app.post("/ingest")
-def ingest(data: Payload):
-    plaintext = decrypt_payload(
-        data.encrypted_key,
-        data.encrypted_data,
-        data.iv,
-        data.tag
-    )
+def ingest(payload: schemas.IngestPayload, db: Session = Depends(get_db)):
+    plaintext = decrypt_payload(payload)
 
     index = blind_index(plaintext)
 
-    record = {
-        "encrypted_data": os.urandom(32).hex(),  # mock randomized encryption
-        "blind_index": index,
-        "key_version": data.key_version
-    }
+    record = models.SecureRecord(
+        encrypted_data=payload.encrypted_data,  # store as-is (randomized)
+        blind_index=index,
+        key_version=payload.key_version,
+    )
 
-    DB.append(record)
+    db.add(record)
+    db.commit()
 
     return {"status": "stored"}
 
+
 @app.get("/search/{national_id}")
-def search(national_id: str):
+def search(national_id: str, db: Session = Depends(get_db)):
     index = blind_index(national_id)
 
-    results = [r for r in DB if r["blind_index"] == index]
+    results = db.query(models.SecureRecord).filter_by(blind_index=index).all()
 
-    return {"results": results}
+    return {
+        "count": len(results),
+        "results": [
+            {
+                "id": r.id,
+                "encrypted_data": r.encrypted_data,
+                "key_version": r.key_version,
+            }
+            for r in results
+        ],
+    }
