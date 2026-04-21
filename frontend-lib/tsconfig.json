@@ -4,7 +4,9 @@
     "module": "CommonJS",
     "outDir": "dist",
     "declaration": true,
-    "strict": true
+    "strict": true,
+    "types": ["node"],
+    "moduleResolution": "node"
   },
   "include": ["src"]
 }
