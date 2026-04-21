@@ -1,13 +1,15 @@
 ## Run Backend
 
 ```shell
-source venv/bin/activate # IMPORTANT: use `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
+# WORKED
+cd backend
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-(or) (unused)
+Docker
 
 ```shell
 docker build -t secure-backend .
