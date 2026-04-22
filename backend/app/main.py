@@ -12,6 +12,19 @@ app = FastAPI()
 
 @app.post("/ingest")
 def ingest(payload: schemas.IngestPayload, db: Session = Depends(get_db)):
+    # payload = {
+    #   "encrypted_key": "...",
+    #   "encrypted_data": "...",
+    #   "iv": "...",
+    #   "tag": "...",
+    #   "key_version": "v1"
+    # }
+    # decrypt payload steps:
+    # 1. load private key from file (keys/private.pem)
+    # 2. decrypt "secret_key" from "encrypted_key" using "private key"
+    # 3. decrypt "plaintext" from "encrypted_data" using "secret_key" >> "plaintext"
+    # 4. blind index the "plaintext"
+    # 5. store "encrypted_data" and "blind_index" in database
     plaintext = decrypt_payload(payload)
 
     index = blind_index(plaintext)
