@@ -6,3 +6,5 @@ venv
 *.bak
 *.tmp
 *.swp
+.env
+keys

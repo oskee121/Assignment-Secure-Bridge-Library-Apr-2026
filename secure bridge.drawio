@@ -1,13 +1,13 @@
 <mxfile host="Electron">
   <diagram name="Page-1" id="fHFK8FDi1cSyz_kutOjN">
-    <mxGraphModel dx="830" dy="592" grid="1" gridSize="5" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="803" dy="573" grid="1" gridSize="5" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="uD0lrq9jYGg3b-rN0-y5-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;labelBackgroundColor=none;dashed=1;fontFamily=Verdana;fontSize=10;" value="&lt;strong style=&quot;font-weight: bold; box-sizing: border-box; color: rgb(8, 8, 8); text-align: start; line-height: 100%;&quot;&gt;Secure Bridge&lt;/strong&gt;" vertex="1">
           <mxGeometry height="290" width="590" x="380" y="115" as="geometry" />
         </mxCell>
-        <mxCell id="uD0lrq9jYGg3b-rN0-y5-3" edge="1" parent="1" source="uD0lrq9jYGg3b-rN0-y5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontFamily=Verdana;fontSize=9;" target="uD0lrq9jYGg3b-rN0-y5-2" value="TLS v1.3">
+        <mxCell id="uD0lrq9jYGg3b-rN0-y5-3" edge="1" parent="1" source="uD0lrq9jYGg3b-rN0-y5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontFamily=Verdana;fontSize=9;" target="uD0lrq9jYGg3b-rN0-y5-2" value="TLS v1.2+">
           <mxGeometry relative="1" x="-0.1667" y="10" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 export interface EncryptedPayload {
     encrypted_data: string;
@@ -12,6 +12,7 @@ export class SecureBridge {
     constructor(private publicKey: string) {}
 
     encrypt(payload: string): EncryptedPayload {
+        console.log('Start encrypt');
         const aesKey = crypto.randomBytes(32);
 
         const iv = crypto.randomBytes(12);
