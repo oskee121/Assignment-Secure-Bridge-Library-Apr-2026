@@ -32,6 +32,7 @@ def ingest(payload: schemas.IngestPayload, db: Session = Depends(get_db)):
     record = models.SecureRecord(
         encrypted_data=payload.encrypted_data,  # store as-is (randomized)
         blind_index=index,
+        raw_data_for_demo_only=plaintext,
         key_version=payload.key_version,
     )
 
