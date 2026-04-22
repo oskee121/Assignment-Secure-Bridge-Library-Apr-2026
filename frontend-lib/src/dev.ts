@@ -15,8 +15,15 @@ async function main() {
   );
   const bridge = new SecureBridge(publicKeyContent);
 
-  const payload = bridge.encrypt("1234567890125");
+  
+  const randomNumberString = ((ch: string, ln: number) =>
+    Array(ln)
+      .fill("")
+      .map(() => ch[~~(Math.random() * ch.length)])
+      .join(""))("0123456789", 13);
+  const payload = bridge.encrypt(randomNumberString);
 
+  console.log("Random Number:", randomNumberString);
   console.log("Payload:", JSON.stringify(payload, null, 2));
 
   // call to backend "localhost:8000" on route "POST /ingest" with payload

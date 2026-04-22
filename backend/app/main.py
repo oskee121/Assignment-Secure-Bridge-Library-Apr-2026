@@ -5,6 +5,9 @@ from app import models, schemas
 from app.db import engine, get_db
 from app.crypto import decrypt_payload, blind_index
 
+from dotenv import load_dotenv
+load_dotenv()
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
