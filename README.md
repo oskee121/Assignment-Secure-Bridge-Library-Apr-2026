@@ -11,7 +11,7 @@ In this repository, you will find the following directories:
 
 For cloud deployment, please read `04-CLOUD_DEPLOYMENT.md` for the deployment strategy.
 
-## Scenario A (Key Rotation) and
+## Scenario A (Key Rotation)
 
 There are 2 key rotation scenarioes.
 
