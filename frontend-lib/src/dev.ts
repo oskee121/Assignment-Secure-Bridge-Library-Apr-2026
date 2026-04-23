@@ -16,11 +16,12 @@ async function main() {
   const bridge = new SecureBridge(publicKeyContent);
 
   
-  const randomNumberString = ((ch: string, ln: number) =>
-    Array(ln)
-      .fill("")
-      .map(() => ch[~~(Math.random() * ch.length)])
-      .join(""))("0123456789", 13);
+  // const randomNumberString = ((ch: string, ln: number) =>
+  //   Array(ln)
+  //     .fill("")
+  //     .map(() => ch[~~(Math.random() * ch.length)])
+  //     .join(""))("0123456789", 13);
+  const randomNumberString='1000000000000'
   const payload = bridge.encrypt(randomNumberString);
 
   console.log("Random Number:", randomNumberString);
