@@ -27,11 +27,12 @@ HMAC_KEY = HMAC_KEY.encode()
 
 # encryption key - versions supported
 KEYS = {
-    "v1": base64.b64decode(os.getenv("ENCRYPTION_KEY_V1")),
-    "v2": base64.b64decode(os.getenv("ENCRYPTION_KEY_V2", "")) if os.getenv("ENCRYPTION_KEY_V2") else None,
+    "k1": base64.b64decode(os.getenv("ENCRYPTION_KEY_K1", "")) if os.getenv("ENCRYPTION_KEY_K1") else None,
+    "k2": base64.b64decode(os.getenv("ENCRYPTION_KEY_K2", "")) if os.getenv("ENCRYPTION_KEY_K2") else None,
+    "k3": base64.b64decode(os.getenv("ENCRYPTION_KEY_K3", "")) if os.getenv("ENCRYPTION_KEY_K3") else None,
 }
 
-CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "v1")
+CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "k1")
 
 def load_private_key(version: str):
     # read data from file

@@ -51,7 +51,7 @@ def search(national_id: str, db: Session = Depends(get_db)):
 
     return {"count": len(results)}
 
-# get all records with pagination (decrypt all data) - for demo only
+# get all records with pagination (decrypt all data) - temporary function for demo purpose only
 @app.get("/records")
 def get_records(page: int = 1, per_page: int = 10, db: Session = Depends(get_db)):
     records = db.query(models.SecureRecord).all()
