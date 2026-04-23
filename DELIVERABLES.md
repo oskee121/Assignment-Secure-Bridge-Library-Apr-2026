@@ -3,12 +3,13 @@
 In this repository, you will find the following directories:
 
 1. /frontend-lib: TypeScript source code for the encryption library. Please read `frontend-lib/README.md` for instructions.
-2. /backend: Python service code (Dockerized). Please read `DOCKER.md` for instructions.
+2. /backend: Python service code (Dockerized). Please read `backend/README.md` for python mode. And `DOCKER.md` for dockerized.
 
 # Documentation (README.md):
 
 ## Deploy service on cloud service, e.g. Vercel
 
+... (TBD)
  
 ## Scenario A (Key Rotation) and
 
@@ -23,4 +24,4 @@ There are 2 key rotation scenarioes.
 
 ## Scenario B (Data Leak).
 
-
+Please see `PII_LEAK_STRATEGY.md` for the PII leak strategy.
