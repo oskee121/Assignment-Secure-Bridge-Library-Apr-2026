@@ -6,7 +6,6 @@ from functools import lru_cache
 
 VAULT_ADDR = os.getenv("VAULT_ADDR")
 VAULT_TOKEN = os.getenv("VAULT_TOKEN")
-VAULT_SECRET_PATH = os.getenv("VAULT_SECRET_PATH", "secret/data/encryption")
 
 
 class VaultKeyProvider:
@@ -25,7 +24,7 @@ class VaultKeyProvider:
         # fetch ใหม่จาก Vault
         print("Fetching secret from Vault...")
         secret = self.client.secrets.kv.v2.read_secret_version(
-            path=VAULT_SECRET_PATH.replace("secret/data/", "")
+            path="encryption"
         )
 
         # set cache + TTL 5 นาที
