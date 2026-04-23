@@ -7,6 +7,7 @@ import os
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
+from .vault_provider import VaultKeyProvider
 
 
 from dotenv import load_dotenv
@@ -24,18 +25,7 @@ if not HMAC_KEY:
 
 HMAC_KEY = HMAC_KEY.encode()
 
-
-# encryption key - versions supported
-KEYS = {
-    "k1": base64.b64decode(os.getenv("ENCRYPTION_KEY_K1", "")) if os.getenv("ENCRYPTION_KEY_K1") else None,
-    "k2": base64.b64decode(os.getenv("ENCRYPTION_KEY_K2", "")) if os.getenv("ENCRYPTION_KEY_K2") else None,
-    "k3": base64.b64decode(os.getenv("ENCRYPTION_KEY_K3", "")) if os.getenv("ENCRYPTION_KEY_K3") else None,
-}
-
-CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "k1")
-
-print(f"DEBUG: Using CURRENT_KEY_VERSION: {CURRENT_KEY_VERSION}")
-
+key_provider = VaultKeyProvider()
 
 def load_private_key(version: str):
     path = PRIVATE_KEY_PATHS.get(version)
@@ -72,7 +62,7 @@ def get_key(version: str) -> bytes:
     return key
 
 def encrypt_for_storage(plaintext: str):
-    key = get_key(CURRENT_KEY_VERSION)
+    version, key = key_provider.get_current_key()
 
     cipher = AES.new(key, AES.MODE_GCM)
     ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode())
@@ -83,10 +73,10 @@ def encrypt_for_storage(plaintext: str):
         "tag": base64.b64encode(tag).decode(),
     }
 
-    return json.dumps(blob), CURRENT_KEY_VERSION
+    return json.dumps(blob), version
 
 def decrypt_from_storage(blob_str: str, version: str) -> str:
-    key = get_key(version)
+    key = key_provider.get_key(version)
 
     blob = json.loads(blob_str)
 

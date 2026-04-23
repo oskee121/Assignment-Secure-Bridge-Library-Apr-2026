@@ -5,3 +5,4 @@ pydantic
 pycryptodome
 python-dotenv
 cryptography
+hvac
