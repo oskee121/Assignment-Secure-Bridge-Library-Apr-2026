@@ -13,19 +13,11 @@ from .vault_provider import VaultKeyProvider
 from dotenv import load_dotenv
 load_dotenv()
 
-# get from .env key "HMAC_KEY"
-HMAC_KEY = os.getenv("HMAC_KEY")
-if not HMAC_KEY:
-    raise ValueError("HMAC_KEY is missing")
-
-HMAC_KEY = HMAC_KEY.encode()
-
 key_provider = VaultKeyProvider()
 
 def load_private_key(version: str):
     key_pem = key_provider.get_private_key(version)
     return RSA.import_key(key_pem.encode())
-
 
 def decrypt_payload(payload):
     private_key = load_private_key(payload.key_version)
@@ -42,9 +34,12 @@ def decrypt_payload(payload):
 
     return plaintext.decode()
 
+def get_hmac_key():
+    return key_provider.get_blind_index_key()
 
 def blind_index(value: str) -> str:
-    return hmac.new(HMAC_KEY, value.encode(), hashlib.sha256).hexdigest()
+    key = get_hmac_key()
+    return hmac.new(key, value.encode(), hashlib.sha256).hexdigest()
 
 
 def get_key(version: str) -> bytes:

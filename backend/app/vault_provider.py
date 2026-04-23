@@ -78,3 +78,12 @@ class VaultKeyProvider:
 
         return self._private_cache
 
+    def get_blind_index_key(self) -> bytes:
+        data = self._get_secret()  # reuse encryption secret
+        data = data["data"]["data"]
+
+        key_b64 = data.get("blind_index_secret")
+        if not key_b64:
+            raise ValueError("blind_index_secret not found in Vault")
+
+        return key_b64.encode()
