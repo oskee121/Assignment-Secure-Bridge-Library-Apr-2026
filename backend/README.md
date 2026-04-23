@@ -11,9 +11,9 @@ To see swagger docs, open http://127.0.0.1:8000/docs in the browser.
 # To generate RSA keys (private and public)
 
 ```shell
-openssl genpkey -algorithm RSA -out keys/private.pem -pkeyopt rsa_keygen_bits:2048
+openssl genpkey -algorithm RSA -out keys/v2/private.pem -pkeyopt rsa_keygen_bits:2048
 ```
 
 ```shell
-openssl rsa -pubout -in keys/private.pem -out keys/public.pem
+openssl rsa -pubout -in keys/v2/private.pem -out keys/v2/public.pem
 ```
