@@ -13,11 +13,6 @@ from .vault_provider import VaultKeyProvider
 from dotenv import load_dotenv
 load_dotenv()
 
-PRIVATE_KEY_PATHS = {
-    "v1": os.getenv("PRIVATE_KEY_V1_PATH"),
-    "v2": os.getenv("PRIVATE_KEY_V2_PATH"),
-}
-
 # get from .env key "HMAC_KEY"
 HMAC_KEY = os.getenv("HMAC_KEY")
 if not HMAC_KEY:
@@ -28,11 +23,8 @@ HMAC_KEY = HMAC_KEY.encode()
 key_provider = VaultKeyProvider()
 
 def load_private_key(version: str):
-    path = PRIVATE_KEY_PATHS.get(version)
-    if not path:
-        raise ValueError(f"Private key version '{version}' not configured")
-    with open(path, "rb") as f:
-        return RSA.import_key(f.read())
+    key_pem = key_provider.get_private_key(version)
+    return RSA.import_key(key_pem.encode())
 
 
 def decrypt_payload(payload):

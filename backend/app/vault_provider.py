@@ -52,3 +52,29 @@ class VaultKeyProvider:
             raise ValueError(f"Key version {version} not found in Vault")
 
         return base64.b64decode(key_b64)
+
+    def get_private_key(self, version: str) -> str:
+        data = self._get_secret_private()
+        key = data.get(version)
+
+        if not key:
+            raise ValueError(f"Private key {version} not found")
+
+        return key
+
+
+    def _get_secret_private(self):
+        now = time.time()
+
+        if hasattr(self, "_private_cache") and now < self._private_expiry:
+            return self._private_cache
+
+        secret = self.client.secrets.kv.v2.read_secret_version(
+            path="private"
+        )
+
+        self._private_cache = secret["data"]["data"]
+        self._private_expiry = now + 300
+
+        return self._private_cache
+
