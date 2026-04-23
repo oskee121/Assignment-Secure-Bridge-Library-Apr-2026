@@ -1,5 +1,18 @@
 # To run (development mode)
 
+Create `.env` file from `.env.example` and fill in the values.
+
+Run this command will start the FastAPI server.
+
+## One time: Setup virtual environment and install dependencies
+
+```shell
+cd backend
+python3 -m venv venv
+```
+
+## Run the server
+
 ```shell
 source venv/bin/activate
 pip install -r requirements.txt

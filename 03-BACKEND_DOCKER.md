@@ -27,7 +27,7 @@ Pre-requisites:
 }
 ```
 
-Run below command in project's root directory.
+Run below command in project's ROOT DIRECTOIRY.
 
 ```shell
 docker build -t secure-bridge-backend .
