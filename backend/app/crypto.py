@@ -34,6 +34,9 @@ KEYS = {
 
 CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "k1")
 
+print(f"DEBUG: Using CURRENT_KEY_VERSION: {CURRENT_KEY_VERSION}")
+
+
 def load_private_key(version: str):
     path = PRIVATE_KEY_PATHS.get(version)
     if not path:

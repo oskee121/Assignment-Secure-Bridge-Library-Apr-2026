@@ -21,7 +21,7 @@ async function main() {
   //     .fill("")
   //     .map(() => ch[~~(Math.random() * ch.length)])
   //     .join(""))("0123456789", 13);
-  const randomNumberString='1000000000000'
+  const randomNumberString='2000000000000'
   const payload = bridge.encrypt(randomNumberString);
 
   console.log("Random Number:", randomNumberString);
