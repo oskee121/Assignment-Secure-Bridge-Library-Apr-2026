@@ -22,18 +22,5 @@ docker run -p 8000:8000 secure-backend
 Frontend-lib
 cd frontend-lib
 npm install
-npm run build
-```
-
-(unused)
-
-```shell
-const bridge = new SecureBridge(publicKey);
-
-const payload = bridge.encrypt("1234567890123");
-
-fetch("/ingest", {
-method: "POST",
-body: JSON.stringify(payload),
-});
+npm run dev
 ```

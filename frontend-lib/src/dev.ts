@@ -26,9 +26,9 @@ async function main() {
   console.log("Random Number:", randomNumberString);
   console.log("Payload:", JSON.stringify(payload, null, 2));
 
-  // call to backend "localhost:8000" on route "POST /ingest" with payload
+  // call to backend "localhost:8000" on route "POST /store" with payload
 
-  const response = await fetch(process.env.BACKEND_HOST + "/ingest", {
+  const response = await fetch(process.env.BACKEND_HOST + "/store", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -12,8 +12,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-@app.post("/ingest")
-def ingest(payload: schemas.IngestPayload, db: Session = Depends(get_db)):
+@app.post("/store")
+def store(payload: schemas.StorePayload, db: Session = Depends(get_db)):
     plaintext = decrypt_payload(payload)
 
     index = blind_index(plaintext)

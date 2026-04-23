@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class IngestPayload(BaseModel):
+class StorePayload(BaseModel):
     encrypted_data: str
     encrypted_key: str
     iv: str
