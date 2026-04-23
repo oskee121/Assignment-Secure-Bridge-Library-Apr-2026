@@ -32,12 +32,17 @@ export class SecureBridge {
             aesKey
         );
 
+        const key_version =
+          process.env.VERIFICATION_SERVICE_PUBLIC_KEY_VERSION || "v1";
+
+        console.log(key_version);
+
         return {
-            encrypted_data: encrypted,
-            encrypted_key: encryptedKey.toString("base64"),
-            iv: iv.toString("base64"),
-            tag: tag.toString("base64"),
-            key_version: "v1",
+          encrypted_data: encrypted,
+          encrypted_key: encryptedKey.toString("base64"),
+          iv: iv.toString("base64"),
+          tag: tag.toString("base64"),
+          key_version,
         };
     }
 }
