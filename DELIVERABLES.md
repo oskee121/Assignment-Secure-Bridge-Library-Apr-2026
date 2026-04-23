@@ -9,7 +9,7 @@ In this repository, you will find the following directories:
 
 ## Deploy service on cloud service, e.g. Vercel
 
-... (TBD)
+For cloud deployment, please read `CLOUD_DEPLOYMENT.md` for the deployment strategy.
  
 ## Scenario A (Key Rotation) and
 
