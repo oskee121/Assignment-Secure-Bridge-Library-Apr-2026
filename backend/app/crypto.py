@@ -1,20 +1,20 @@
 import base64
 import hashlib
 import hmac
-from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
-import os
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import json
+import os
+
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
 
 
 from dotenv import load_dotenv
 load_dotenv()
 
-# get from .env key "PRIVATE_KEY_V1_PATH"
-PRIVATE_KEYS = {
-    "v1": os.getenv("PRIVATE_KEY_V1_PATH")
+PRIVATE_KEY_PATHS = {
+    "v1": os.getenv("PRIVATE_KEY_V1_PATH"),
+    "v2": os.getenv("PRIVATE_KEY_V2_PATH"),
 }
 
 # get from .env key "HMAC_KEY"
@@ -35,30 +35,18 @@ KEYS = {
 CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "k1")
 
 def load_private_key(version: str):
-    # read data from file
-    path = PRIVATE_KEYS[version]
+    path = PRIVATE_KEY_PATHS.get(version)
+    if not path:
+        raise ValueError(f"Private key version '{version}' not configured")
     with open(path, "rb") as f:
         return RSA.import_key(f.read())
 
 
 def decrypt_payload(payload):
-    # payload = {
-    #   "encrypted_key": "...",
-    #   "encrypted_data": "...",
-    #   "iv": "...",
-    #   "tag": "...",
-    #   "key_version": "v1"
-    # }
-    # decrypt payload steps:
-    # 1. load private key from file (keys/v[1,2,3]/private.pem)
-    # 2. decrypt "secret_key" from "encrypted_key" using "private key"
-    # 3. decrypt "plaintext" from "encrypted_data" using "secret_key" >> "plaintext"
     private_key = load_private_key(payload.key_version)
 
     cipher_rsa = PKCS1_OAEP.new(private_key, hashAlgo=SHA256)
-
     aes_key = cipher_rsa.decrypt(base64.b64decode(payload.encrypted_key))
-
 
     cipher = AES.new(aes_key, AES.MODE_GCM, nonce=base64.b64decode(payload.iv))
 
@@ -70,15 +58,11 @@ def decrypt_payload(payload):
     return plaintext.decode()
 
 
-def blind_index(value: str):
+def blind_index(value: str) -> str:
     return hmac.new(HMAC_KEY, value.encode(), hashlib.sha256).hexdigest()
 
 
-def load_key():
-    # key จาก .env (base64)
-    return base64.b64decode(os.environ["ENCRYPTION_KEY"])
-
-def get_key(version: str):
+def get_key(version: str) -> bytes:
     key = KEYS.get(version)
     if not key:
         raise ValueError(f"Key version {version} not found")

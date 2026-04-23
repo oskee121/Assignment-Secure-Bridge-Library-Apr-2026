@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class IngestPayload(BaseModel):
     encrypted_data: str
     encrypted_key: str
@@ -7,6 +8,3 @@ class IngestPayload(BaseModel):
     tag: str
     key_version: str
 
-
-class SearchResponse(BaseModel):
-    results: list
