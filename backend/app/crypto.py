@@ -6,6 +6,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 import os
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import json
 
 
 from dotenv import load_dotenv
@@ -22,6 +23,15 @@ if not HMAC_KEY:
     raise ValueError("HMAC_KEY is missing")
 
 HMAC_KEY = HMAC_KEY.encode()
+
+
+# encryption key - versions supported
+KEYS = {
+    "v1": base64.b64decode(os.getenv("ENCRYPTION_KEY_V1")),
+    "v2": base64.b64decode(os.getenv("ENCRYPTION_KEY_V2", "")) if os.getenv("ENCRYPTION_KEY_V2") else None,
+}
+
+CURRENT_KEY_VERSION = os.getenv("ENCRYPTION_KEY_VERSION", "v1")
 
 def load_private_key(version: str):
     # read data from file
@@ -67,23 +77,36 @@ def load_key():
     # key จาก .env (base64)
     return base64.b64decode(os.environ["ENCRYPTION_KEY"])
 
-def encrypt_aes_gcm(plaintext: bytes) -> dict:
-    key = load_key()
-    aesgcm = AESGCM(key)
+def get_key(version: str):
+    key = KEYS.get(version)
+    if not key:
+        raise ValueError(f"Key version {version} not found")
+    return key
 
-    iv = os.urandom(12)  # GCM standard
-    ciphertext = aesgcm.encrypt(iv, plaintext, None)
+def encrypt_for_storage(plaintext: str):
+    key = get_key(CURRENT_KEY_VERSION)
 
-    return {
-        "iv": base64.b64encode(iv).decode(),
-        "ciphertext": base64.b64encode(ciphertext).decode()
+    cipher = AES.new(key, AES.MODE_GCM)
+    ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode())
+
+    blob = {
+        "ciphertext": base64.b64encode(ciphertext).decode(),
+        "iv": base64.b64encode(cipher.nonce).decode(),
+        "tag": base64.b64encode(tag).decode(),
     }
 
-def decrypt_aes_gcm(iv_b64: str, ciphertext_b64: str) -> bytes:
-    key = load_key()
-    aesgcm = AESGCM(key)
+    return json.dumps(blob), CURRENT_KEY_VERSION
 
-    iv = base64.b64decode(iv_b64)
-    ciphertext = base64.b64decode(ciphertext_b64)
+def decrypt_from_storage(blob_str: str, version: str) -> str:
+    key = get_key(version)
 
-    return aesgcm.decrypt(iv, ciphertext, None)
+    blob = json.loads(blob_str)
+
+    cipher = AES.new(key, AES.MODE_GCM, nonce=base64.b64decode(blob["iv"]))
+
+    plaintext = cipher.decrypt_and_verify(
+        base64.b64decode(blob["ciphertext"]),
+        base64.b64decode(blob["tag"]),
+    )
+
+    return plaintext.decode()
