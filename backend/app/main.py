@@ -2,7 +2,13 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.db import engine, get_db
-from app.crypto import decrypt_payload, blind_index, encrypt_for_storage, decrypt_from_storage
+from app.crypto import (
+    decrypt_payload,
+    blind_index,
+    encrypt_for_storage,
+    decrypt_from_storage,
+    get_current_key_version,
+)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -40,28 +46,55 @@ def search(national_id: str, db: Session = Depends(get_db)):
 
     return {"count": len(results)}
 
-# NOTE: This endpoint decrypts all records and is intended for demo purposes only.
-# The `page` and `per_page` params implement basic in-memory pagination.
-# @app.get("/records")
-# def get_records(page: int = 1, per_page: int = 10, db: Session = Depends(get_db)):
-#     all_records = db.query(models.SecureRecord).all()
-#
-#     output = []
-#     for r in all_records:
-#         plaintext = decrypt_from_storage(r.encrypted_blob, r.key_version)
-#
-#         # Lazy key migration: re-encrypt under the current key version
-#         if r.key_version != CURRENT_KEY_VERSION:
-#             new_blob, new_version = encrypt_for_storage(plaintext)
-#             r.encrypted_blob = new_blob
-#             r.key_version = new_version
-#             db.add(r)
-#
-#         output.append({"id": r.id, "national_id": plaintext})
-#
-#     db.commit()
-#
-#     start = (page - 1) * per_page
-#     return {"results": output[start: start + per_page]}
 
+# NOTE: Demo-only endpoint (decrypts data)
+@app.get("/records")
+def get_records(page: int = 1, per_page: int = 10, db: Session = Depends(get_db)):
+    all_records = db.query(models.SecureRecord).all()
 
+    current_version = get_current_key_version()
+
+    output = []
+    migrated = 0
+    failed = 0
+
+    for r in all_records:
+        try:
+            plaintext = decrypt_from_storage(r.encrypted_blob, r.key_version)
+
+            # 🔑 Lazy migration using Vault as source of truth
+            if r.key_version != current_version:
+                print(
+                    f"♻️ Lazy migrate record {r.id} "
+                    f"(v{r.key_version} → v{current_version})"
+                )
+
+                new_blob, new_version = encrypt_for_storage(plaintext)
+                r.encrypted_blob = new_blob
+                r.key_version = new_version
+
+                db.add(r)
+                migrated += 1
+
+            output.append({
+                "id": r.id,
+                "national_id": plaintext
+            })
+
+        except Exception as e:
+            print(f"❌ Failed to decrypt record {r.id}: {e}")
+            failed += 1
+
+    db.commit()
+
+    start = (page - 1) * per_page
+    paginated = output[start: start + per_page]
+
+    return {
+        "page": page,
+        "per_page": per_page,
+        "total": len(output),
+        "migrated": migrated,
+        "failed": failed,
+        "results": paginated,
+    }
