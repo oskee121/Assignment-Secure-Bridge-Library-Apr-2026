@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  vault:
+    image: hashicorp/vault:latest
+    user: "0"
+    container_name: vault
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+    volumes:
+      - vault-data:/vault/file
+      - ./vault-init.sh:/vault/init.sh
+      - ./config.hcl:/vault/config.hcl
+    entrypoint: >
+      sh -c "
+        apk add --no-cache jq &&
+        sh /vault/init.sh
+      "
+
+  backend:
+    build: .
+    container_name: backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - vault
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: root
+      DATABASE_URL: sqlite:///./data/secure.db
+    volumes:
+      - ./backend:/app/backend
+      - ./backend/data:/app/backend/data
+      - vault-data:/vault/file
+    command: >
+      sh -c "
+        echo '⏳ Waiting for Vault token...';
+        while [ ! -f /vault/file/backend_token ]; do
+          sleep 1;
+        done;
+
+        export VAULT_TOKEN=$(cat /vault/file/backend_token);
+        echo '✅ Got VAULT_TOKEN';
+
+        cd backend &&
+        exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  vault-data:
