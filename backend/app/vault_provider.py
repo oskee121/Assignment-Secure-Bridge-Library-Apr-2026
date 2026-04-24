@@ -86,3 +86,4 @@ class VaultKeyProvider:
             raise ValueError("blind_index_secret not found in Vault")
 
         return key_b64.encode()
+

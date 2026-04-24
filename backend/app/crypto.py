@@ -75,3 +75,7 @@ def decrypt_from_storage(blob_str: str, version: str) -> str:
     )
 
     return plaintext.decode()
+
+def get_current_key_version() -> str:
+    version, _ = key_provider.get_current_key()
+    return version
